@@ -6,7 +6,6 @@ repositories {
 
 dependencies {
     testCompile 'junit:junit:4.11'
-    compile 'com.squareup.okhttp3:okhttp:3.0.1'
     compile 'org.json:json:20151123'
 }
 

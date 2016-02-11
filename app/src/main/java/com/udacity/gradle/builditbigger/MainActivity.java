@@ -9,10 +9,12 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.example.JokeTeller;
+import com.example.shevchenko.myapplication.backend.myApi.MyApi;
+import com.google.api.client.extensions.android.http.AndroidHttp;
+import com.google.api.client.extensions.android.json.AndroidJsonFactory;
 import com.nanodegree.shevchenko.jokeactivity.LibraryActivity;
 
-import java.net.URL;
+import java.io.IOException;
 
 
 public class MainActivity extends ActionBarActivity {
@@ -47,21 +49,34 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void tellJoke(View view) {
-        new getJokeTask().execute();
+        new EndpointsAsyncTask().execute(this);
     }
 
-    private class getJokeTask extends AsyncTask<URL, String, String> {
+    class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
+        private static final String BACKEND_URL = "https://builditbigger-1218.appspot.com/_ah/api/";
+        private MyApi myApiService = null;
         private Context context;
-        protected String doInBackground(URL... urls) {
-            context = getApplicationContext();
-            return new JokeTeller().getJoke();
+
+        @Override
+        protected String doInBackground(Context... params) {
+            if(myApiService == null) {  // Only do this once
+                MyApi.Builder builder = new MyApi.Builder(AndroidHttp.newCompatibleTransport(), new AndroidJsonFactory(), null)
+                        .setRootUrl(BACKEND_URL);
+                myApiService = builder.build();
+            }
+            context = params[0];
+            try {
+                return myApiService.getJoke().execute().getData();
+            } catch (IOException e) {
+                return e.getMessage();
+            }
         }
 
+        @Override
         protected void onPostExecute(String result) {
             Intent jokeActivity = new Intent(context, LibraryActivity.class);
-            jokeActivity.putExtra("JOKE", result);
+            jokeActivity.putExtra(LibraryActivity.JOKE_EXTRA, result);
             startActivity(jokeActivity);
-            //Toast.makeText(context, result, Toast.LENGTH_SHORT).show();
         }
     }
 }
