@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,8 @@ import java.io.IOException;
 
 
 public class MainActivity extends ActionBarActivity {
+    static final String BACKEND_URL = "https://builditbigger-1218.appspot.com/_ah/api/";
+    static final String JOKE_LOADING_TAG = "Fetching joke error";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,7 +56,7 @@ public class MainActivity extends ActionBarActivity {
     }
 
     class EndpointsAsyncTask extends AsyncTask<Context, Void, String> {
-        private static final String BACKEND_URL = "https://builditbigger-1218.appspot.com/_ah/api/";
+
         private MyApi myApiService = null;
         private Context context;
 
@@ -68,7 +71,8 @@ public class MainActivity extends ActionBarActivity {
             try {
                 return myApiService.getJoke().execute().getData();
             } catch (IOException e) {
-                return e.getMessage();
+                Log.e(JOKE_LOADING_TAG, e.getMessage());
+                return "";
             }
         }
 
