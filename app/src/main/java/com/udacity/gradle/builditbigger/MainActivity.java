@@ -8,7 +8,6 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.example.shevchenko.myapplication.backend.myApi.MyApi;
 import com.google.api.client.extensions.android.http.AndroidHttp;
@@ -51,7 +50,7 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void tellJoke(View view) {
+    public void tellJoke() {
         new EndpointsAsyncTask().execute(this);
     }
 
