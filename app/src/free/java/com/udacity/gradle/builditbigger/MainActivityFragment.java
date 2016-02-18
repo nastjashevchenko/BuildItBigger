@@ -6,35 +6,30 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
-import com.google.android.gms.ads.InterstitialAd;
 
 
 public class MainActivityFragment extends Fragment {
 
-    private InterstitialAd mInterstitialAd;
     private MainActivity mActivity;
+    private ProgressBar mProgressBar;
 
     public MainActivityFragment() {
     }
 
-    private void requestNewInterstitial() {
-        AdRequest adRequest = new AdRequest.Builder()
-                .addTestDevice(AdRequest.DEVICE_ID_EMULATOR)
-                .build();
-
-        mInterstitialAd.loadAd(adRequest);
+    @Override
+    public void onResume() {
+        super.onResume();
+        mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mActivity = (MainActivity) getActivity();
-        mInterstitialAd = new InterstitialAd(getContext());
-        mInterstitialAd.setAdUnitId(getString(R.string.interstitial_ad_unit_id));
     }
 
     @Override
@@ -43,6 +38,8 @@ public class MainActivityFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
 
         AdView mAdView = (AdView) root.findViewById(R.id.adView);
+        mProgressBar = (ProgressBar) root.findViewById(R.id.progressBar);
+
 
         // Create an ad request. Check logcat output for the hashed device ID to
         // get test ads on a physical device. e.g.
@@ -52,25 +49,13 @@ public class MainActivityFragment extends Fragment {
                 .build();
         mAdView.loadAd(adRequest);
 
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                requestNewInterstitial();
-                mActivity.tellJoke();
-            }
-        });
 
-        requestNewInterstitial();
-
-        Button mLoadInterstitialButton = (Button) root.findViewById(R.id.joke_button);
-        mLoadInterstitialButton.setOnClickListener(new View.OnClickListener() {
+        Button mTellJokeButton = (Button) root.findViewById(R.id.joke_button);
+        mTellJokeButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (mInterstitialAd.isLoaded()) {
-                    mInterstitialAd.show();
-                } else {
-                    mActivity.tellJoke();
-                }
+                mProgressBar.setVisibility(View.VISIBLE);
+                mActivity.tellJoke();
             }
         });
 
